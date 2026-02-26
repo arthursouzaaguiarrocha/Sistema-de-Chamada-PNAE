@@ -1,43 +1,57 @@
-# Sistema-de-Chamada-PNAE
+# 📌 Sistema de Chamada PNAE
 
-O Sistema de Chamada PNAE é uma aplicação web desenvolvida em Python com o framework Flask, projetada para facilitar o controle de chamadas e a geração de listas de presença no contexto do Programa Nacional de Alimentação Escolar (PNAE) — um programa governamental brasileiro que busca garantir alimentação adequada e saudável para estudantes da educação básica. �
-Serviços e Informações do Brasil
-🧠 Objetivo do Projeto
-O sistema tem como principal objetivo permitir que bolsistas e coordenadores acompanhem e registrem a presença de alunos no recebimento de lanche/refeição escolar, automatizando processos manuais e gerando relatórios em PDF com a chamada.
-🛠️ Funcionalidades Principais
-👤 Autenticação de Usuários
-Login e cadastro de usuários.
-Diferenciação entre bolsistas e coordenadores (admin) com privilégios distintos.
-📋 Controle de Alunos
-Cadastro, edição e remoção de alunos.
-Listagem de estudantes por série.
-📄 Chamada e Relatórios
-Marcação de presença individual por bolsista.
-Geração de PDFs de chamada com dados organizados (aluno, série, presença ou ausência).
-Relatórios com total de alunos que receberam ou não o lanche.
-📨 Envio e Armazenamento
-Envio de chamadas para coordenação com armazenamento de PDF no banco de dados.
-Download de chamadas diretamente pela interface administrativa.
-📊 Painel Administrativo
-Dashboard com estatísticas:
-Total de alunos cadastrados.
-Total de bolsistas.
-Chamadas realizadas por dia e no histórico.
-Listagem de usuários.
-Gestão de usuários (promover/demover privilégios e exclusão).
-📁 Tecnologias Utilizadas
-Flask – para o backend web.
-MySQL – banco de dados relacional para armazenamento de usuários, alunos e chamadas.
-ReportLab – geração dinâmica de PDF das chamadas.
-HTML/CSS/Jinja2 – templates e interface visual do sistema.
-Python como linguagem principal de desenvolvimento.
-📦 Estrutura do Projeto
-O repositório contém:
-app.py – lógica principal e rotas do sistema.
-banco.sql – estrutura de banco de dados.
-templates/ – arquivos HTML para as páginas do sistema.
-static/ – arquivos CSS/JS utilizados na interface.
-📈 Benefícios Práticos
-✔️ Permite organizar de forma digital e eficiente as chamadas de distribuição de alimentos no contexto escolar.
-✔️ Automatiza relatórios e facilita auditoria e acompanhamento por parte da coordenação.
-✔️ Reduz erros e tempo gasto em processos manuais de registro.
+O **Sistema de Chamada PNAE** é uma aplicação web desenvolvida em **Python**, utilizando o framework **Flask**, com o objetivo de facilitar o controle de chamadas e o registro de presença de alunos no contexto do **Programa Nacional de Alimentação Escolar (PNAE)**.
+
+O sistema foi criado para substituir processos manuais, tornando o acompanhamento da distribuição de refeições escolares mais organizado, seguro e eficiente.
+
+---
+
+## 🎯 Objetivo do Projeto
+
+Permitir que **bolsistas e coordenadores** realizem o controle de presença dos alunos no momento da entrega da alimentação escolar, além de gerar relatórios em **PDF** para acompanhamento e arquivamento.
+
+---
+
+## 🛠️ Funcionalidades
+
+### 👤 Autenticação
+- Sistema de **login e cadastro de usuários**.
+- Diferenciação de permissões:
+  - **Bolsista**
+  - **Administrador (Coordenação)**
+
+### 📋 Gerenciamento de Alunos
+- Cadastro de alunos.
+- Edição e exclusão de registros.
+- Organização por série.
+
+### 📝 Chamada
+- Marcação de presença e ausência.
+- Registro diário da chamada.
+- Histórico de chamadas realizadas.
+
+### 📄 Relatórios
+- Geração automática de **PDFs de chamada**.
+- Relatórios com:
+  - Nome do aluno
+  - Série
+  - Presença ou ausência
+- Download de arquivos diretamente pelo sistema.
+
+### 📊 Painel Administrativo
+- Total de alunos cadastrados.
+- Total de usuários.
+- Histórico de chamadas.
+- Gerenciamento de usuários (criar, editar e excluir).
+
+---
+
+## 💻 Tecnologias Utilizadas
+
+- **Python**
+- **Flask**
+- **MySQL**
+- **HTML5**
+- **CSS3**
+- **Jinja2**
+- **ReportLab** (geração de PDFs)
