@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Conta - PNAE</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+<div class="wrapper">
+    <div class="container">
+
+        <img src="{{ url_for('static', filename='imagens/pnae_old_lg.png') }}" alt="Logo PNAE">
+        <h1>Criar Conta</h1>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    <div class="flash-erro">{{ msg }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form action="/cadastro" method="POST">
+
+            <label for="nome">Nome completo</label>
+            <input type="text" id="nome" name="nome" required placeholder="Ex: Maria da Silva">
+
+            <label for="email">E-mail</label>
+            <input type="email" id="email" name="email" required placeholder="seu@email.com">
+
+            <label for="senha">Senha</label>
+            <div class="campo-senha">
+                <input type="password" id="senha" name="senha" required placeholder="Crie uma senha">
+                <button type="button" class="btn-olho" onclick="alternarSenha('senha', this)" title="Mostrar senha">
+                    👁
+                </button>
+            </div>
+
+            <label for="confirmar_senha">Repetir senha</label>
+            <div class="campo-senha">
+                <input type="password" id="confirmar_senha" name="confirmar_senha" required placeholder="Digite a senha novamente">
+                <button type="button" class="btn-olho" onclick="alternarSenha('confirmar_senha', this)" title="Mostrar senha">
+                    👁
+                </button>
+            </div>
+
+            <!-- Aviso se senhas não conferem (validação no front) -->
+            <p id="aviso-senha" style="color:#c0392b; font-size:12px; margin-top:6px; display:none; justify-content:flex-start;">
+                ⚠ As senhas não coincidem.
+            </p>
+
+            <button type="submit" id="btn-cadastrar">Criar Conta</button>
+        </form>
+
+        <p>Já tem conta? <a href="/">Faça login</a></p>
+    </div>
+</div>
+
+<script>
+function alternarSenha(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+        btn.title = 'Ocultar senha';
+    } else {
+        input.type = 'password';
+        btn.textContent = '👁';
+        btn.title = 'Mostrar senha';
+    }
+}
+
+// Validação em tempo real
+const s1 = document.getElementById('senha');
+const s2 = document.getElementById('confirmar_senha');
+const aviso = document.getElementById('aviso-senha');
+const btn = document.getElementById('btn-cadastrar');
+
+function checarSenhas() {
+    if (s2.value.length === 0) { aviso.style.display = 'none'; return; }
+    if (s1.value !== s2.value) {
+        aviso.style.display = 'flex';
+        s2.style.borderColor = '#c0392b';
+        btn.disabled = true;
+        btn.style.opacity = '0.6';
+    } else {
+        aviso.style.display = 'none';
+        s2.style.borderColor = '#217346';
+        btn.disabled = false;
+        btn.style.opacity = '1';
+    }
+}
+
+s1.addEventListener('input', checarSenhas);
+s2.addEventListener('input', checarSenhas);
+</script>
+</body>
+</html>

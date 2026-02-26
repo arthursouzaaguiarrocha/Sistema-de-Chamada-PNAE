@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Coordenador - PNAE</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles2.css') }}">
+    <style>
+        * { box-sizing:border-box; }
+
+        /* TOPO */
+        .topo { background:#1a1a2e; padding:0; }
+        .topo-inner { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; padding:14px 20px; }
+        .badge { background:#e74c3c; color:#fff; font-size:11px; font-weight:bold; padding:3px 8px; border-radius:20px; letter-spacing:1px; margin-left:8px; }
+        .topo h1 { font-size:clamp(14px,2.5vw,20px); color:#fff; margin:0; }
+        .topo-sub { font-size:12px; color:#aaa; margin-top:2px; }
+        .menu { display:flex; gap:8px; flex-wrap:wrap; }
+        .menu a { color:#fff; text-decoration:none; font-size:13px; padding:6px 14px; border-radius:6px; border:1px solid rgba(255,255,255,.2); transition:background .2s; }
+        .menu a:hover { background:rgba(255,255,255,.1); text-decoration:none; }
+        .menu a.ativo { background:#e74c3c; border-color:#e74c3c; }
+
+        /* CONTAINER */
+        .container { width:95%; max-width:1100px; margin:24px auto; }
+
+        /* FLASH */
+        .flash-msg { padding:10px 16px; border-radius:6px; margin-bottom:16px; font-size:14px; font-weight:bold; }
+        .flash-ok   { background:#d4edda; color:#155724; border:1px solid #c3e6cb; }
+
+        /* TABS */
+        .tabs { display:flex; gap:4px; margin-bottom:20px; flex-wrap:wrap; }
+        .tab-btn {
+            padding:9px 20px; border:none; border-radius:8px 8px 0 0;
+            font-size:14px; cursor:pointer; background:#e0e0e0; color:#555;
+            font-weight:bold; transition:background .2s;
+        }
+        .tab-btn.ativo { background:#1a1a2e; color:#fff; }
+        .tab-content { display:none; }
+        .tab-content.ativo { display:block; }
+
+        /* CARDS */
+        .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-bottom:24px; }
+        .card { background:#fff; border-radius:12px; padding:22px 20px; text-align:center; box-shadow:0 2px 12px rgba(0,0,0,.08); border-top:4px solid #ccc; }
+        .card.verde  { border-color:#1a5c35; }
+        .card.azul   { border-color:#2980b9; }
+        .card.laranja{ border-color:#e67e22; }
+        .card.roxo   { border-color:#8e44ad; }
+        .card-num { font-size:40px; font-weight:bold; line-height:1; margin-bottom:6px; }
+        .card.verde   .card-num { color:#1a5c35; }
+        .card.azul    .card-num { color:#2980b9; }
+        .card.laranja .card-num { color:#e67e22; }
+        .card.roxo    .card-num { color:#8e44ad; }
+        .card-label { font-size:13px; color:#777; }
+
+        /* SEÇÃO */
+        .secao { background:#fff; border-radius:12px; padding:22px; margin-bottom:24px; box-shadow:0 2px 12px rgba(0,0,0,.07); }
+        .secao h2 { font-size:16px; color:#1a1a2e; margin-bottom:16px; padding-bottom:10px; border-bottom:2px solid #f0f0f0; }
+
+        /* STATUS HOJE */
+        .status-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+        .status-box { border-radius:10px; padding:16px; }
+        .status-box.enviou { background:#e8f5e9; border:1px solid #c3e6cb; }
+        .status-box.nao-enviou { background:#fde8e8; border:1px solid #f5c6c6; }
+        .status-box h3 { font-size:14px; margin-bottom:10px; }
+        .status-box.enviou h3 { color:#1a5c35; }
+        .status-box.nao-enviou h3 { color:#c0392b; }
+        .status-item { font-size:13px; padding:4px 0; border-bottom:1px solid rgba(0,0,0,.06); }
+        .status-item:last-child { border:none; }
+
+        /* TABELA */
+        .tabela-wrapper { overflow-x:auto; }
+        table { width:100%; border-collapse:collapse; min-width:500px; }
+        th, td { padding:10px 12px; border-bottom:1px solid #eee; font-size:13px; text-align:left; }
+        th { background:#f8f8f8; color:#555; font-weight:bold; font-size:12px; text-transform:uppercase; letter-spacing:.5px; }
+        tr:hover td { background:#fafafa; }
+
+        /* BADGES */
+        .tag { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:bold; }
+        .tag-admin { background:#fde8e8; color:#c0392b; }
+        .tag-user  { background:#e8f5e9; color:#1a5c35; }
+        .tag-voce  { background:#e8f0fd; color:#1a56c4; }
+
+        /* BOTÕES */
+        .btn { padding:5px 12px; border-radius:5px; font-size:12px; text-decoration:none; display:inline-block; border:none; cursor:pointer; white-space:nowrap; }
+        .btn-dl      { background:#2980b9; color:#fff; }
+        .btn-del     { background:#e74c3c; color:#fff; }
+        .btn-promover{ background:#8e44ad; color:#fff; }
+        .btn-rebaixar{ background:#7f8c8d; color:#fff; }
+        .btn:hover { opacity:.85; }
+
+        /* GRÁFICO */
+        .grafico { display:flex; flex-direction:column; gap:10px; }
+        .barra-row { display:flex; align-items:center; gap:10px; }
+        .barra-label { min-width:130px; font-size:13px; color:#444; text-align:right; }
+        .barra-track { flex:1; background:#f0f0f0; border-radius:6px; height:28px; overflow:hidden; }
+        .barra-fill { height:100%; background:linear-gradient(90deg,#1a5c35,#2ecc71); border-radius:6px; display:flex; align-items:center; padding-left:10px; color:#fff; font-size:12px; font-weight:bold; transition:width .6s ease; }
+        .barra-total { min-width:30px; font-size:13px; color:#555; font-weight:bold; }
+
+        /* RESPONSIVO */
+        @media (max-width:600px) {
+            .status-grid { grid-template-columns:1fr; }
+            .cards { grid-template-columns:1fr 1fr; }
+            .barra-label { min-width:80px; font-size:11px; }
+        }
+        @media (max-width:380px) { .cards { grid-template-columns:1fr; } }
+
+        /* FORM ADICIONAR BOLSISTA */
+        .form-add {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            align-items: flex-end;
+        }
+        .form-add-col { display: flex; flex-direction: column; gap: 4px; }
+        .form-label { font-size: 12px; font-weight: bold; color: #555; text-transform: uppercase; letter-spacing: .4px; }
+        .form-input {
+            padding: 10px 12px; border: 1.5px solid #ddd;
+            border-radius: 7px; font-size: 14px; background: #fafafa;
+            transition: border-color .2s; width: 100%;
+        }
+        .form-input:focus { outline: none; border-color: #1a1a2e; background: #fff; }
+        .campo-senha-adm { position: relative; }
+        .campo-senha-adm .form-input { padding-right: 40px; }
+        .btn-olho-adm {
+            position: absolute; right: 10px; top: 50%;
+            transform: translateY(-50%); background: none;
+            border: none; cursor: pointer; font-size: 16px; color: #888;
+        }
+        .btn-olho-adm:hover { color: #1a1a2e; }
+        .form-add-btn { justify-content: flex-end; }
+        .btn-adicionar {
+            width: 100%; padding: 11px 20px;
+            background: #1a1a2e; color: #fff;
+            border: none; border-radius: 7px;
+            font-size: 14px; font-weight: bold;
+            cursor: pointer; transition: background .2s;
+        }
+        .btn-adicionar:hover { background: #2c2c4e; }
+        @media (max-width: 560px) {
+            .form-add { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="topo">
+    <div class="topo-inner">
+        <div>
+            <h1>📋 Painel do Coordenador <span class="badge">COORD</span></h1>
+            <div class="topo-sub">Olá, <strong style="color:#fff;">{{ nome_usuario }}</strong>! Área restrita.</div>
+        </div>
+        <nav class="menu">
+            <a href="{{ url_for('index') }}">🏠 Sistema</a>
+            <a href="{{ url_for('admin_dashboard') }}" class="ativo">📋 Coordenador</a>
+            <a href="{{ url_for('logout') }}">🚪 Sair</a>
+        </nav>
+    </div>
+</header>
+
+<div class="container">
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}{% for msg in messages %}
+            <div class="flash-msg flash-ok">{{ msg }}</div>
+        {% endfor %}{% endif %}
+    {% endwith %}
+
+    <!-- TABS -->
+    <div class="tabs">
+        <button class="tab-btn ativo" onclick="abrirTab('visao-geral')">📊 Visão Geral</button>
+        <button class="tab-btn" onclick="abrirTab('chamadas')">📄 Chamadas Recebidas</button>
+        <button class="tab-btn" onclick="abrirTab('usuarios')">👥 Gerenciar Usuários</button>
+    </div>
+
+    <!-- ===== ABA 1: VISÃO GERAL ===== -->
+    <div id="visao-geral" class="tab-content ativo">
+
+        <!-- CARDS -->
+        <div class="cards">
+            <div class="card verde">
+                <div class="card-num">{{ total_alunos }}</div>
+                <div class="card-label">🎒 Alunos cadastrados</div>
+            </div>
+            <div class="card azul">
+                <div class="card-num">{{ total_bolsistas }}</div>
+                <div class="card-label">🧑‍💼 Bolsistas</div>
+            </div>
+            <div class="card laranja">
+                <div class="card-num">{{ chamadas_hoje }}</div>
+                <div class="card-label">📤 Chamadas hoje</div>
+            </div>
+            <div class="card roxo">
+                <div class="card-num">{{ total_chamadas }}</div>
+                <div class="card-label">📁 Total de chamadas</div>
+            </div>
+        </div>
+
+        <!-- STATUS DOS BOLSISTAS HOJE -->
+        <div class="secao">
+            <h2>📅 Status dos Bolsistas Hoje</h2>
+            <div class="status-grid">
+                <div class="status-box enviou">
+                    <h3>✅ Já enviaram ({{ enviaram_hoje|length }})</h3>
+                    {% if enviaram_hoje %}
+                        {% for b in enviaram_hoje %}
+                        <div class="status-item">👤 {{ b.bolsista_nome }}</div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="status-item" style="color:#aaa;">Nenhum envio hoje ainda.</div>
+                    {% endif %}
+                </div>
+                <div class="status-box nao-enviou">
+                    <h3>⏳ Ainda não enviaram ({{ nao_enviaram|length }})</h3>
+                    {% if nao_enviaram %}
+                        {% for b in nao_enviaram %}
+                        <div class="status-item">👤 {{ b.nome }}</div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="status-item" style="color:#aaa;">Todos enviaram hoje! 🎉</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- GRÁFICO ALUNOS POR SÉRIE -->
+        <div class="secao">
+            <h2>📊 Alunos por Série</h2>
+            {% if alunos_por_serie %}
+            <div class="grafico">
+                {% set max_qtd = alunos_por_serie | map(attribute='qtd') | max %}
+                {% for item in alunos_por_serie %}
+                <div class="barra-row">
+                    <div class="barra-label">{{ item.serie }}</div>
+                    <div class="barra-track">
+                        <div class="barra-fill" style="width:{{ (item.qtd / max_qtd * 100)|int }}%;">
+                            {% if (item.qtd / max_qtd * 100)|int > 20 %}{{ item.qtd }} aluno(s){% endif %}
+                        </div>
+                    </div>
+                    <div class="barra-total">{{ item.qtd }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p style="color:#999;text-align:center;padding:20px;">Nenhum aluno cadastrado ainda.</p>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <!-- ===== ABA 2: CHAMADAS RECEBIDAS ===== -->
+    <div id="chamadas" class="tab-content">
+        <div class="secao">
+            <h2>📄 Chamadas Recebidas dos Bolsistas</h2>
+            <div class="tabela-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Hora</th>
+                            <th>Bolsista</th>
+                            <th>Total</th>
+                            <th>Receberam</th>
+                            <th>Não receberam</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in chamadas %}
+                        <tr>
+                            <td><strong>{{ c.data_fmt }}</strong></td>
+                            <td>{{ c.hora_fmt }}</td>
+                            <td>{{ c.bolsista_nome }}</td>
+                            <td>{{ c.total_alunos }}</td>
+                            <td style="color:#1a5c35;font-weight:bold;">✔ {{ c.receberam }}</td>
+                            <td style="color:#c0392b;font-weight:bold;">✘ {{ c.total_alunos - c.receberam }}</td>
+                            <td>
+                                <a href="{{ url_for('download_pdf_chamada', chamada_id=c.id) }}" class="btn btn-dl">📥 Baixar PDF</a>
+                                <a href="{{ url_for('excluir_chamada', chamada_id=c.id) }}" class="btn btn-del"
+                                   onclick="return confirm('Excluir este registro?')">🗑</a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" style="text-align:center;color:#999;padding:24px;">
+                                Nenhuma chamada recebida ainda.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ABA 3: USUÁRIOS ===== -->
+    <div id="usuarios" class="tab-content">
+
+        <!-- FORMULÁRIO ADICIONAR BOLSISTA -->
+        <div class="secao">
+            <h2>➕ Adicionar Bolsista</h2>
+            <form action="{{ url_for('admin_add_usuario') }}" method="POST" id="formAddBolsista">
+                <div class="form-add">
+                    <div class="form-add-col">
+                        <label class="form-label">Nome completo</label>
+                        <input type="text" name="nome" placeholder="Ex: João da Silva" required class="form-input">
+                    </div>
+                    <div class="form-add-col">
+                        <label class="form-label">E-mail</label>
+                        <input type="email" name="email" placeholder="bolsista@email.com" required class="form-input">
+                    </div>
+                    <div class="form-add-col">
+                        <label class="form-label">Senha</label>
+                        <div class="campo-senha-adm">
+                            <input type="password" name="senha" id="senhaNova" placeholder="Crie uma senha" required class="form-input">
+                            <button type="button" class="btn-olho-adm" onclick="toggleSenhaAdm('senhaNova', this)">👁</button>
+                        </div>
+                    </div>
+                    <div class="form-add-col">
+                        <label class="form-label">Tipo de acesso</label>
+                        <select name="is_admin" class="form-input">
+                            <option value="0">🟢 Bolsista</option>
+                            <option value="1">🔴 Coordenador</option>
+                        </select>
+                    </div>
+                    <div class="form-add-col form-add-btn">
+                        <button type="submit" class="btn-adicionar">✚ Adicionar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- LISTA DE USUÁRIOS -->
+        <div class="secao">
+            <h2>👥 Usuários Cadastrados</h2>
+            <div class="tabela-wrapper">
+                <table>
+                    <thead>
+                        <tr><th>Nome</th><th>E-mail</th><th>Tipo</th><th>Ações</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for u in usuarios %}
+                        <tr>
+                            <td><strong>{{ u.nome }}</strong></td>
+                            <td>{{ u.email }}</td>
+                            <td>
+                                {% if u.email == session['usuario'] %}
+                                    <span class="tag tag-voce">🔵 Você</span>
+                                {% elif u.is_admin %}
+                                    <span class="tag tag-admin">🔴 Coordenador</span>
+                                {% else %}
+                                    <span class="tag tag-user">🟢 Bolsista</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if u.email != session['usuario'] %}
+                                    {% if u.is_admin %}
+                                    <a href="{{ url_for('toggle_admin', email=u.email) }}" class="btn btn-rebaixar"
+                                       onclick="return confirm('Tornar {{ u.nome }} bolsista?')">↓ Tornar Bolsista</a>
+                                    {% else %}
+                                    <a href="{{ url_for('toggle_admin', email=u.email) }}" class="btn btn-promover"
+                                       onclick="return confirm('Tornar {{ u.nome }} coordenador?')">↑ Tornar Coord.</a>
+                                    {% endif %}
+                                    <a href="{{ url_for('excluir_usuario', email=u.email) }}" class="btn btn-del"
+                                       onclick="return confirm('Excluir {{ u.nome }}?')">🗑 Excluir</a>
+                                {% else %}
+                                    <span style="color:#aaa;font-size:12px;">— sua conta —</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+function abrirTab(id) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('ativo'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('ativo'));
+    document.getElementById(id).classList.add('ativo');
+    event.target.classList.add('ativo');
+}
+
+function toggleSenhaAdm(id, btn) {
+    const input = document.getElementById(id);
+    input.type = input.type === 'password' ? 'text' : 'password';
+    btn.textContent = input.type === 'password' ? '👁' : '🙈';
+}
+</script>
+
+</body>
+</html>

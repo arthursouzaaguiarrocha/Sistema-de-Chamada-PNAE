@@ -1,0 +1,96 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    background: #f4f6f8;
+}
+
+/* TOPO */
+.topo {
+    background: #00461f;
+    color: white;
+    padding: 15px;
+}
+
+.topo h1 {
+    margin-bottom: 10px;
+}
+
+.menu a {
+    color: white;
+    text-decoration: none;
+    margin-right: 15px;
+    font-weight: bold;
+}
+
+.menu a:hover {
+    text-decoration: underline;
+}
+
+/* CONTAINER */
+.container {
+    width: 90%;
+    margin: 30px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+/* MENSAGEM */
+.mensagem {
+    padding: 12px;
+    margin-bottom: 20px;
+    display: none;
+}
+
+.sucesso {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+/* BUSCA */
+.busca {
+    margin-bottom: 15px;
+}
+
+.busca input {
+    padding: 8px;
+    width: 250px;
+}
+
+.busca button {
+    padding: 8px 15px;
+    background: #035500;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+/* TABELA */
+.tabela {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabela th {
+    background: #e6f5e9;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+.tabela td {
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+/* ===== RESPONSIVO ADICIONAL ===== */
+@media (max-width: 600px) {
+    .topo { padding: 10px 12px; }
+    .container { width: 98%; padding: 12px; margin: 10px auto; }
+}

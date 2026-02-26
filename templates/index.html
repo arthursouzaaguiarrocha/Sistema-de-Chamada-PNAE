@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Lanche - PNAE</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles2.css') }}">
+    <style>
+        * { box-sizing: border-box; }
+        .topo { padding: 12px 16px; }
+        .topo-inner { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+        .topo h1 { font-size:clamp(14px,3vw,20px); margin:0; }
+        .saudacao { font-size:12px; color:#a8e6c0; margin-top:2px; }
+        .menu { display:flex; gap:8px; flex-wrap:wrap; }
+        .menu a {
+            color:#fff; text-decoration:none; font-size:13px;
+            padding:6px 12px; border:1px solid rgba(255,255,255,.3);
+            border-radius:6px; transition:background .2s;
+        }
+        .menu a:hover { background:rgba(255,255,255,.15); text-decoration:none; }
+        .menu a.admin-btn { background:#e74c3c; border-color:#e74c3c; }
+
+        .container { width:95%; max-width:960px; margin:20px auto; padding:16px; }
+
+        .flash-msg { padding:10px 16px; border-radius:6px; margin-bottom:14px; font-size:14px; font-weight:bold; }
+        .flash-ok   { background:#d4edda; color:#155724; border:1px solid #c3e6cb; }
+        .flash-erro { background:#fde8e8; color:#c0392b; border:1px solid #f5c6c6; }
+
+        .secao-titulo { font-size:15px; font-weight:bold; color:#1a5c35; margin-bottom:10px; }
+
+        .form-cadastro { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
+        .form-cadastro input {
+            flex:1; min-width:140px; padding:10px 12px;
+            border:1.5px solid #ccc; border-radius:6px; font-size:14px;
+        }
+        .form-cadastro input:focus { outline:none; border-color:#1a5c35; }
+        .form-cadastro button {
+            padding:10px 20px; background:#1a5c35; color:#fff;
+            border:none; border-radius:6px; cursor:pointer; font-size:14px;
+        }
+        .form-cadastro button:hover { background:#14472a; }
+        hr { border:none; border-top:1px solid #e0e0e0; margin:18px 0; }
+
+        .busca input {
+            width:100%; padding:10px 14px; margin-bottom:12px;
+            border:1.5px solid #ccc; border-radius:6px; font-size:14px;
+        }
+        .busca input:focus { outline:none; border-color:#1a5c35; }
+
+        .tabela-wrapper { overflow-x:auto; }
+        table { width:100%; border-collapse:collapse; min-width:420px; }
+        th, td { padding:10px 12px; border:1px solid #ddd; font-size:14px; }
+        th { background:#1a5c35; color:#fff; text-align:left; }
+        tr:nth-child(even) { background:#f5faf7; }
+        tr:hover { background:#e6f4ec; }
+
+        .check-cell { text-align:center; }
+        .check-lanche { width:20px; height:20px; cursor:pointer; accent-color:#1a5c35; }
+
+        .btn { padding:5px 10px; border-radius:4px; font-size:12px; text-decoration:none; display:inline-block; white-space:nowrap; }
+        .btn-editar  { background:#f0a500; color:#fff; }
+        .btn-excluir { background:#d9534f; color:#fff; }
+        .btn-editar:hover  { background:#c88a00; }
+        .btn-excluir:hover { background:#b52b27; }
+
+        /* Área de ações finais */
+        .acoes-finais {
+            display:flex; gap:12px; flex-wrap:wrap;
+            margin-top:20px; align-items:center;
+        }
+        .btn-pdf {
+            flex:1; min-width:200px; padding:13px 20px;
+            background:#2980b9; color:#fff; border:none;
+            border-radius:8px; font-size:14px; font-weight:bold;
+            cursor:pointer; text-align:center;
+        }
+        .btn-pdf:hover { background:#1f6391; }
+        .btn-enviar {
+            flex:1; min-width:200px; padding:13px 20px;
+            background:#1a5c35; color:#fff; border:none;
+            border-radius:8px; font-size:15px; font-weight:bold;
+            cursor:pointer; text-align:center;
+        }
+        .btn-enviar:hover { background:#14472a; }
+
+        .contador { margin-top:12px; font-size:13px; color:#666; }
+        .contador b { color:#1a5c35; }
+
+        /* Info de envio */
+        .info-envio {
+            background:#e8f5e9; border:1px solid #c3e6cb;
+            border-radius:8px; padding:12px 16px;
+            margin-top:10px; font-size:13px; color:#1a5c35;
+        }
+
+        @media (max-width:560px) {
+            table, thead, tbody, th, td, tr { display:block; }
+            thead { display:none; }
+            tbody tr {
+                background:#fff; border:1px solid #ddd; border-radius:8px;
+                margin-bottom:12px; padding:10px 12px;
+                box-shadow:0 1px 4px rgba(0,0,0,.08);
+            }
+            tbody tr:nth-child(even) { background:#fff; }
+            td { border:none; padding:4px 0; font-size:14px; display:flex; align-items:center; gap:6px; }
+            td::before { content:attr(data-label); font-weight:bold; color:#1a5c35; min-width:90px; font-size:12px; }
+            .check-cell { justify-content:flex-start; }
+            .form-cadastro { flex-direction:column; }
+            .acoes-finais { flex-direction:column; }
+            .btn-pdf, .btn-enviar { width:100%; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="topo">
+    <div class="topo-inner">
+        <div>
+            <h1>🥗 CONTROLE DE LANCHE - PNAE</h1>
+            <div class="saudacao">Olá, <strong>{{ nome_usuario }}</strong>! Bem-vindo(a).</div>
+        </div>
+        <nav class="menu">
+            {% if is_admin %}
+            <a href="{{ url_for('admin_dashboard') }}" class="admin-btn">⚙️ Coordenador</a>
+            {% endif %}
+            <a href="{{ url_for('logout') }}">🚪 Sair</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for msg in messages %}
+                <div class="flash-msg flash-ok">{{ msg }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- CADASTRAR ALUNO -->
+    <div class="secao-titulo">➕ Cadastrar novo aluno</div>
+    <form action="{{ url_for('add_aluno') }}" method="POST" class="form-cadastro">
+        <input type="text" name="nome" placeholder="Nome completo do aluno" required>
+        <input type="text" name="serie" placeholder="Série (ex: 5º Ano A)" required>
+        <button type="submit">Cadastrar</button>
+    </form>
+
+    <hr>
+
+    <!-- BUSCA -->
+    <div class="busca">
+        <input type="text" id="campoBusca" placeholder="🔍 Buscar por nome ou série..." onkeyup="filtrarTabela()">
+    </div>
+
+    <!-- FORMULÁRIO DA CHAMADA -->
+    <form action="" method="POST" id="formChamada">
+        <div class="secao-titulo">📋 Lista de chamada — marque quem recebeu o lanche</div>
+
+        <div class="tabela-wrapper">
+            <table id="tabelaAlunos">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nome</th>
+                        <th>Série</th>
+                        <th style="text-align:center;">Recebeu?</th>
+                        <th style="text-align:center;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for aluno in alunos %}
+                    <tr>
+                        <td data-label="#">{{ loop.index }}</td>
+                        <td data-label="Nome">
+                            <input type="hidden" name="aluno_id"    value="{{ aluno.id }}">
+                            <input type="hidden" name="aluno_nome"  value="{{ aluno.nome }}">
+                            <input type="hidden" name="aluno_serie" value="{{ aluno.serie }}">
+                            {{ aluno.nome }}
+                        </td>
+                        <td data-label="Série">{{ aluno.serie }}</td>
+                        <td data-label="Recebeu?" class="check-cell">
+                            <input type="checkbox" name="verificado" value="{{ aluno.id }}"
+                                   class="check-lanche" id="chk_{{ aluno.id }}"
+                                   onchange="atualizarContador()">
+                            <label for="chk_{{ aluno.id }}" style="font-size:13px;color:#555;cursor:pointer;">Sim</label>
+                        </td>
+                        <td data-label="Ações" style="text-align:center;">
+                            <a href="{{ url_for('editar_aluno', id=aluno.id) }}" class="btn btn-editar">✏️</a>
+                            <a href="{{ url_for('delete_aluno', id=aluno.id) }}" class="btn btn-excluir"
+                               onclick="return confirm('Excluir {{ aluno.nome }}?')">🗑</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align:center;color:#999;padding:24px;">
+                            Nenhum aluno cadastrado ainda.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="contador">
+            Total: <b>{{ alunos|length }}</b> aluno(s) &nbsp;|&nbsp;
+            Marcados: <b id="contMarcados">0</b>
+        </div>
+
+        {% if alunos %}
+        <div class="info-envio">
+            💡 <strong>Como funciona:</strong> Marque os alunos que receberam o lanche.
+            Use <em>"Baixar PDF"</em> para salvar uma cópia local, ou
+            <em>"Enviar para Coordenador"</em> para registrar a chamada no sistema e notificar o coordenador.
+        </div>
+
+        <div class="acoes-finais">
+            <button type="submit" formaction="{{ url_for('gerar_pdf') }}" class="btn-pdf">
+                📥 Baixar PDF
+            </button>
+            <button type="submit" formaction="{{ url_for('enviar_chamada') }}" class="btn-enviar"
+                    onclick="return confirm('Confirma o envio da chamada para o coordenador?')">
+                📤 Enviar para Coordenador
+            </button>
+        </div>
+        {% endif %}
+    </form>
+
+</main>
+
+<script>
+function filtrarTabela() {
+    const termo = document.getElementById("campoBusca").value.toLowerCase();
+    document.querySelectorAll("#tabelaAlunos tbody tr").forEach(tr => {
+        tr.style.display = tr.textContent.toLowerCase().includes(termo) ? "" : "none";
+    });
+}
+function atualizarContador() {
+    document.getElementById("contMarcados").textContent =
+        document.querySelectorAll(".check-lanche:checked").length;
+}
+</script>
+</body>
+</html>

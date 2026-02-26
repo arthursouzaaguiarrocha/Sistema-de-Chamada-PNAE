@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - PNAE</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+<div class="wrapper">
+    <div class="container">
+
+        <img src="{{ url_for('static', filename='imagens/pnae_old_lg.png') }}" alt="Logo PNAE">
+        <h1>Login</h1>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    <div class="flash-erro">{{ msg }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form action="/login" method="POST">
+
+            <label for="email">E-mail</label>
+            <input type="email" id="email" name="email" required placeholder="seu@email.com">
+
+            <label for="senha">Senha</label>
+            <div class="campo-senha">
+                <input type="password" id="senha" name="senha" required placeholder="Digite sua senha">
+                <button type="button" class="btn-olho" onclick="alternarSenha('senha', this)" title="Mostrar/ocultar senha">
+                    👁
+                </button>
+            </div>
+
+            <button type="submit">Entrar</button>
+        </form>
+
+        <p>Não tem conta? <a href="/cadastro">Cadastre-se</a></p>
+    </div>
+</div>
+
+<script>
+function alternarSenha(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+        btn.title = 'Ocultar senha';
+    } else {
+        input.type = 'password';
+        btn.textContent = '👁';
+        btn.title = 'Mostrar senha';
+    }
+}
+</script>
+</body>
+</html>

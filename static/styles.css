@@ -1,0 +1,188 @@
+/* ===== RESET ===== */
+*, *::before, *::after {
+    margin: 0; padding: 0;
+    box-sizing: border-box;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+/* ===== FUNDO ===== */
+body {
+    background-image: url("imagens/Background.jpg");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* ===== CARD CENTRAL ===== */
+.wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    padding: 40px 36px;
+    width: 100%;
+    max-width: 440px;
+}
+
+/* ===== LOGO ===== */
+.container img {
+    width: 220px;
+    max-width: 80%;
+    margin: 0 auto 10px;
+    display: block;
+}
+
+/* ===== TÍTULO ===== */
+.container h1 {
+    text-align: center;
+    color: #005000;
+    font-size: 22px;
+    margin-bottom: 24px;
+}
+
+/* ===== FLASH ===== */
+.flash-erro {
+    background: #fde8e8;
+    color: #c0392b;
+    border: 1px solid #f5c6c6;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    text-align: center;
+}
+.flash-ok {
+    background: #e8f5e9;
+    color: #1a5c35;
+    border: 1px solid #c3e6cb;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    text-align: center;
+}
+
+/* ===== LABELS ===== */
+.container label {
+    display: block;
+    color: #005000;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    margin-top: 12px;
+}
+
+/* ===== INPUTS ===== */
+.container input[type="text"],
+.container input[type="email"],
+.container input[type="password"] {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #222;
+    transition: border-color .2s;
+    background: #fafafa;
+}
+.container input:focus {
+    outline: none;
+    border-color: #217346;
+    background: #fff;
+}
+
+/* ===== CAMPO SENHA COM BOTÃO OLHO ===== */
+.campo-senha {
+    position: relative;
+    width: 100%;
+}
+.campo-senha input {
+    padding-right: 44px !important;
+}
+.btn-olho {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: #888;
+    font-size: 18px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+}
+.btn-olho:hover { color: #217346; }
+
+/* ===== CHECKBOX MOSTRAR SENHA (fallback) ===== */
+.mostrar-senha {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    font-size: 12px;
+    color: #555;
+    cursor: pointer;
+}
+.mostrar-senha input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    accent-color: #217346;
+    cursor: pointer;
+    margin: 0;
+}
+
+/* ===== BOTÃO PRINCIPAL ===== */
+.container button[type="submit"] {
+    width: 100%;
+    padding: 14px;
+    background: #217346;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 22px;
+    transition: background .2s;
+}
+.container button[type="submit"]:hover {
+    background: #1a5a37;
+}
+
+/* ===== LINK RODAPÉ ===== */
+.container p {
+    display: flex;
+    justify-content: center;
+    font-size: 13px;
+    margin-top: 16px;
+    color: #555;
+    gap: 4px;
+}
+.container p a {
+    color: #217346;
+    text-decoration: none;
+    font-weight: bold;
+}
+.container p a:hover { text-decoration: underline; }
+
+/* ===== RESPONSIVO MOBILE ===== */
+@media (max-width: 480px) {
+    body { padding: 12px; align-items: flex-start; padding-top: 30px; }
+    .container { padding: 28px 20px; border-radius: 12px; }
+    .container h1 { font-size: 18px; }
+    .container img { width: 170px; }
+}
